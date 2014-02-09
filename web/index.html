@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>{{.title}} - moremon</title>
+	<style type="text/css">
+{{ template "index.css" }}
+  </style>
+	<script language="javascript" type="text/javascript">
+{{ template "jquery.min.js" }}
+	</script>
+	<script language="javascript" type="text/javascript">
+{{ template "jquery.flot.min.js" }}
+	</script>
+	<script type="text/javascript">
+
+	$(function() {
+
+		var data = [],
+			totalPoints = 300;
+
+    for (var i = 0; i < totalPoints; ++i) {
+      data.push([i, 0])
+    }
+
+		var dataSocket = new WebSocket("ws://{{ .hostname }}/ws");
+    dataSocket.onmessage = function (event) {
+			if (data.length >= totalPoints)
+				data = data.slice(1);
+      if (data.length == 0) {
+        nextIndex = 1;
+      } else {
+        nextIndex = data[data.length - 1][0] + 1;
+      }
+			json = JSON.parse(event.data);
+			value = json.V
+      data.push([nextIndex, value])
+      console.log(value);
+    }
+
+		var updateInterval = 500;
+
+		var plot = $.plot("#placeholder", [ data ], {
+			series: {
+				shadowSize: 0,
+        hoverable: true
+        //label: "TEST"
+			},
+			yaxis: {
+				min: 0,
+				max: 1.0
+			},
+			xaxis: {
+				show: false
+			}
+		});
+
+		function update() {
+			plot.setData([ data ]);
+      plot.setupGrid()
+			plot.draw();
+			setTimeout(update, updateInterval);
+		}
+		update();
+	});
+
+	</script>
+</head>
+<body>
+
+	<div id="header">
+    <b>More</b>mon | {{.title}}
+	</div>
+
+	<div id="content">
+
+		<div class="demo-container">
+			<div id="placeholder" class="demo-placeholder"></div>
+		</div>
+
+	</div>
+
+</body>
+</html>
