@@ -12,7 +12,7 @@ Building
     git clone https://github.com/lzap/moremon.git
     cd moremon
     go get github.com/gorilla/websocket
-    go get github.com/alecthomas/gozmq
+    go get github.com/c9s/goprocinfo/linux
     go build
     ./moremon
 
