@@ -6,6 +6,13 @@ based on jQuery/Flot. Features:
 
 * monitors load
 
+Live demo
+---------
+
+Live demo is running on Red Hat OpenShift hosted platform cloud. Give the
+example some time to load, the application is usually stopped when you click
+the link: http://moremon-lzap.rhcloud.com
+
 Building
 --------
 
