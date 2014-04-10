@@ -9,13 +9,13 @@ import (
 
 const (
 	maximumAllowedTime = 24 * time.Hour
-	maxMessageSize = 512
+	maxMessageSize     = 512
 )
 
 type Connection struct {
 	fromAddr string
-	ws *websocket.Conn
-	send chan []byte
+	ws       *websocket.Conn
+	send     chan []byte
 }
 
 func (c *Connection) readPump() {

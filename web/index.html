@@ -24,6 +24,8 @@
     }
 
 		var dataSocket = new WebSocket("ws://{{ .hostname }}/ws");
+		var plots = {};
+
     dataSocket.onmessage = function (event) {
 			if (data.length >= totalPoints)
 				data = data.slice(1);
@@ -33,32 +35,39 @@
         nextIndex = data[data.length - 1][0] + 1;
       }
 			json = JSON.parse(event.data);
-			value = json.V
-      data.push([nextIndex, value])
-      console.log(value);
+			if (json.Type == "init") {
+				plots[json.Id] = $.plot("#plot-" + json.Id, [ data ], {
+					series: {
+						shadowSize: 0,
+						hoverable: true,
+						label: json.Label
+					},
+					yaxis: {
+						min: json.Min,
+						max: json.Max
+					},
+					xaxis: {
+						show: false
+					}
+				});
+			} else {
+				value = json.V
+				data.push([nextIndex, value])
+			}
+			console.log(json);
     }
 
 		var updateInterval = 500;
 
-		var plot = $.plot("#placeholder", [ data ], {
-			series: {
-				shadowSize: 0,
-        hoverable: true
-        //label: "TEST"
-			},
-			yaxis: {
-				min: 0,
-				max: 32.0
-			},
-			xaxis: {
-				show: false
-			}
-		});
-
 		function update() {
-			plot.setData([ data ]);
-      plot.setupGrid()
-			plot.draw();
+			for(var key in plots) {
+				plot = plots[key]
+				if (plot !== undefined) {
+					plot.setData([ data ]);
+					plot.setupGrid()
+					plot.draw();
+				}
+			}
 			setTimeout(update, updateInterval);
 		}
 		update();
@@ -75,7 +84,7 @@
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder"></div>
+			<div id="plot-ld" class="demo-placeholder"></div>
 		</div>
 
 	</div>

@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
-	"os"
-	"io/ioutil"
 	"fmt"
-	"log"
-	"strings"
-	"net/http"
 	"html/template"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"strings"
 )
 
 var iface = flag.String("interface", "localhost", "http service interface (default: localhost)")
@@ -31,7 +31,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	var hostname, err = os.Hostname()
-	if (err != nil) {
+	if err != nil {
 		hostname = "Unknown"
 	}
 	var wsURL = r.Host
@@ -44,8 +44,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		wsPort = *htmlPort
 	}
 	wsURL = fmt.Sprintf("%s:%s", wsURL, wsPort)
-	data := map[string]string {
-		"title": hostname,
+	data := map[string]string{
+		"title":    hostname,
 		"hostname": wsURL,
 	}
 	template.Must(template.ParseGlob("web/*")).ExecuteTemplate(w, "index.html", data)

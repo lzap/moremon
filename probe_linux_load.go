@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	probeId = "ld"
+	probeId    = "ld"
 	probeLabel = "load"
 )
 
@@ -13,7 +13,7 @@ type LoadLinuxResource struct {
 }
 
 func (r LoadLinuxResource) Init() *InitPlotMesage {
-	return &InitPlotMesage{ Id: probeId, Label: probeLabel, Min: 0.0, Max: 1.0 }
+	return &InitPlotMesage{Id: probeId, Type: "init", Label: probeLabel, Min: 0.0, Max: 3.0}
 }
 
 func (r LoadLinuxResource) Probe() (*UpdateMessage, error) {

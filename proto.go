@@ -5,18 +5,19 @@ import (
 )
 
 type InitPlotMesage struct {
-	Id string
+	Id    string
+	Type  string
 	Label string
-	Min float64
-	Max float64
+	Min   float64
+	Max   float64
 }
 
 type UpdateMessage struct {
 	Id string
-	V float64
+	V  float64
 }
 
-func (m *UpdateMessage) asJSON() []byte {
+func MessageToJSON(m interface{}) []byte {
 	result, err := json.Marshal(m)
 	if err != nil {
 		eLogger.Panic("Unable to marshall JSON for", m)

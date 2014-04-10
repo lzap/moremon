@@ -11,17 +11,17 @@ type Resource interface {
 
 type Monitor struct {
 	updateTicker *time.Ticker
-	history int
-	resources map[string]Resource
+	history      int
+	resources    map[string]Resource
 }
 
 var monitor = NewMonitor()
 
 func NewMonitor() *Monitor {
-	res := map[string]Resource {
+	res := map[string]Resource{
 		"ld": LoadLinuxResource{},
 	}
-	return &Monitor{ resources: res }
+	return &Monitor{resources: res}
 }
 
 func (m *Monitor) setUpdateInterval(interval int) {
@@ -45,9 +45,15 @@ func (m *Monitor) readData() {
 					eLogger.Println("Unable to probe", name, "-", err)
 					continue
 				}
-				h.broadcast <- msg.asJSON()
+				h.broadcast <- MessageToJSON(msg)
 			}
 		}
 	}
 }
 
+func (m *Monitor) SendInitMessages(conn *Connection) {
+	for _, resource := range m.resources {
+		msg := resource.Init()
+		conn.send <- MessageToJSON(msg)
+	}
+}
