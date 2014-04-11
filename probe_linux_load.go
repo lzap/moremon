@@ -4,16 +4,19 @@ import (
 	linuxproc "github.com/c9s/goprocinfo/linux"
 )
 
-const (
-	probeId    = "ld"
-	probeLabel = "load"
-)
-
 type LoadLinuxResource struct {
 }
 
+func numCores() int {
+	cpuinfo, err := linuxproc.ReadCPUInfo("/proc/cpuinfo")
+	if err != nil {
+		return 3
+	}
+	return cpuinfo.NumCPU()
+}
+
 func (r LoadLinuxResource) Init() *InitPlotMesage {
-	return &InitPlotMesage{Id: probeId, Type: "init", Label: probeLabel, Min: 0.0, Max: 3.0}
+	return &InitPlotMesage{Id: "ld", Type: "init", Label: []string{"load"}, Min: 0.0, Max: float64(numCores())}
 }
 
 func (r LoadLinuxResource) Probe() (*UpdateMessage, error) {
@@ -21,5 +24,5 @@ func (r LoadLinuxResource) Probe() (*UpdateMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &UpdateMessage{Id: probeId, V: loadavg.Last1Min}, nil
+	return &UpdateMessage{Id: "ld", V: []float64{loadavg.Last1Min}}, nil
 }

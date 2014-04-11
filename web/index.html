@@ -16,31 +16,34 @@
 
 	$(function() {
 
-		var data = [],
-			totalPoints = 300;
-
-    for (var i = 0; i < totalPoints; ++i) {
-      data.push([i, 0])
-    }
+		var data = {};
+		var totalPoints = 300;
+		var nextIndex = 300;
 
 		var dataSocket = new WebSocket("ws://{{ .hostname }}/ws");
 		var plots = {};
 
     dataSocket.onmessage = function (event) {
-			if (data.length >= totalPoints)
-				data = data.slice(1);
-      if (data.length == 0) {
-        nextIndex = 1;
-      } else {
-        nextIndex = data[data.length - 1][0] + 1;
-      }
 			json = JSON.parse(event.data);
 			if (json.Type == "init") {
-				plots[json.Id] = $.plot("#plot-" + json.Id, [ data ], {
+				// init data
+				data[json.Id] = new Array();
+				for (var i = 0; i < json.Label.length; i++) {
+					label = json.Label[i]
+					series = {}
+					series["label"] = label
+					series["data"] = new Array();
+					for (var j = 0; j < totalPoints; ++j) {
+						series["data"].push([j, 0])
+					}
+					data[json.Id].push(series)
+				}
+
+				// create plot
+				plots[json.Id] = $.plot("#plot-" + json.Id, data[json.Id], {
 					series: {
 						shadowSize: 0,
-						hoverable: true,
-						label: json.Label
+						hoverable: true
 					},
 					yaxis: {
 						min: json.Min,
@@ -51,10 +54,17 @@
 					}
 				});
 			} else {
-				value = json.V
-				data.push([nextIndex, value])
+				if (data[json.Id][0]["data"].length >= totalPoints) {
+					for (var i = 0; i < data[json.Id].length; i++) {
+						data[json.Id][i]["data"] = data[json.Id][i]["data"].slice(1);
+					}
+				}
+				for (var i = 0; i < data[json.Id].length; i++) {
+					data[json.Id][i]["data"].push([nextIndex++, json.V[i]]);
+				}
 			}
-			console.log(json);
+			//console.log(json);
+			//console.log(data);
     }
 
 		var updateInterval = 500;
@@ -63,7 +73,7 @@
 			for(var key in plots) {
 				plot = plots[key]
 				if (plot !== undefined) {
-					plot.setData([ data ]);
+					plot.setData(data[key]);
 					plot.setupGrid()
 					plot.draw();
 				}
@@ -85,6 +95,10 @@
 
 		<div class="demo-container">
 			<div id="plot-ld" class="demo-placeholder"></div>
+		</div>
+
+		<div class="demo-container">
+			<div id="plot-mem" class="demo-placeholder"></div>
 		</div>
 
 	</div>
