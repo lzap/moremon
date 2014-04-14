@@ -10,9 +10,9 @@ type LoadLinuxResource struct {
 func numCores() int {
 	cpuinfo, err := linuxproc.ReadCPUInfo("/proc/cpuinfo")
 	if err != nil {
-		return 3
+		return 16
 	}
-	return cpuinfo.NumCPU()
+	return cpuinfo.NumCPU() * 2
 }
 
 func (r LoadLinuxResource) Init() *InitPlotMesage {

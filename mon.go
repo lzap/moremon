@@ -19,8 +19,9 @@ var monitor = NewMonitor()
 
 func NewMonitor() *Monitor {
 	res := map[string]Resource{
-		"ld":  LoadLinuxResource{},
-		"mem": MemLinuxResource{},
+		"ld": LoadLinuxResource{},
+		"my": MemLinuxResource{},
+		"dk": NewDiskLinuxResource(),
 	}
 	return &Monitor{resources: res}
 }

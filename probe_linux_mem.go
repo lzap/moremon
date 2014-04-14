@@ -14,7 +14,7 @@ func (r MemLinuxResource) Init() *InitPlotMesage {
 		panic("Cannot read memory info")
 	}
 	max := (math.Max(float64(meminfo["MemTotal"]), float64(meminfo["SwapTotal"])) * 1.20) / 10000
-	return &InitPlotMesage{Id: "mem", Type: "init", Label: []string{"used", "swap", "cache"}, Min: 0.0, Max: max}
+	return &InitPlotMesage{Id: "my", Type: "init", Label: []string{"used", "swap", "cache"}, Min: 0.0, Max: max}
 }
 
 func (r MemLinuxResource) Probe() (*UpdateMessage, error) {
@@ -25,5 +25,5 @@ func (r MemLinuxResource) Probe() (*UpdateMessage, error) {
 	used := float64(meminfo["MemTotal"]-meminfo["MemFree"]-meminfo["Buffers"]-meminfo["Cached"]) / 10000
 	swap := float64(meminfo["SwapTotal"]-meminfo["SwapFree"]) / 10000
 	cached := float64(meminfo["Cached"]) / 10000
-	return &UpdateMessage{Id: "mem", V: []float64{used, swap, cached}}, nil
+	return &UpdateMessage{Id: "my", V: []float64{used, swap, cached}}, nil
 }
